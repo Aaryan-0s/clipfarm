@@ -27,7 +27,7 @@
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",
     "@vitejs/plugin-react": "^4.7.0",
-    "@vitest/coverage-v8": "^4.1.10",
+    "@vitest/coverage-v8": "^4.1.11",
     "autoprefixer": "^10.4.23",
     "axe-core": "latest",
     "eslint": "9.39.5",
@@ -39,9 +39,13 @@
     "postcss": "8.5.25",
     "tailwindcss": "^4.2.2",
     "vite": "^6.4.3",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "overrides": {
-    "minimatch": "10.2.5"
+    "minimatch": "10.2.5",
+    "baseline-browser-mapping": "2.11.23",
+    "browserslist": "4.29.0",
+    "js-yaml": "4.3.2",
+    "nanoid": "3.3.18"
   }
 }
