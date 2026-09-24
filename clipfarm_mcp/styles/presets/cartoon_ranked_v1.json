@@ -1,0 +1,34 @@
+{
+  "style_id": "cartoon_ranked_v1",
+  "style_version": 1,
+  "display_name": "Cartoon Ranked (FuryBeez-inspired)",
+  "width": 720,
+  "height": 1280,
+  "fps": 24,
+  "title_line_1": "RANKING TOP 5 TIMES PETER",
+  "title_line_2": "GOT HARASSED",
+  "list_x": 42,
+  "first_row_y": 161,
+  "row_spacing": 33,
+  "action_y": 322,
+  "action_height": 780,
+  "caption_y": 1032,
+  "minimum_clip_seconds": 25,
+  "maximum_clip_seconds": 30,
+  "target_aftermath_seconds": 10,
+  "intro_seconds": 0,
+  "transition": {
+    "audio": "original_generated_whoosh",
+    "start_seconds": 0.0,
+    "duration_seconds": 0.36,
+    "gain": 0.19,
+    "exclude_first_clip": true
+  },
+  "labels": {
+    "1": "Hypnosis goes wrong",
+    "2": "Peter vs the bull",
+    "3": "Doctor checks Peter",
+    "4": "Angela's office trap",
+    "5": "Birthday surprise"
+  }
+}

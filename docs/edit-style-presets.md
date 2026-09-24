@@ -132,5 +132,28 @@ preset can produce a different show without editing engine code.
    behaviour. Future sports/streaming styles should be installable without
    altering Family Guy or the default renderer.
 
-Status: REFERENCE REVIEW + DESIGN PLAN ONLY. This document does not switch a
-default, overwrite any existing job, install assets, or publish content.
+## Current implementation status (2026-09-24)
+
+The first opt-in sample is implemented in
+`clipfarm_mcp/styles/cartoon_ranked.py` with a separate immutable-on-export
+configuration at `clipfarm_mcp/styles/presets/cartoon_ranked_v1.json`. It
+renders five source intervals into five 25–30s clips with no intro, a
+persistent top/left ranking list that reveals one entry at a time, a centered
+action stage, word-timed captions, and a locally synthesized original swish
+between ranked scenes. Original files and the legacy renderer are unchanged.
+
+Run the sample manually with an explicit preset ID in the plan:
+
+```
+python -m clipfarm_mcp.styles.cartoon_ranked data/clipfarm/family_guy_top5_30s.json --output "D:\fmailyguy\Compilations\Peter Top 5\Cartoon Ranked v1"
+```
+
+The initial review output is about 143s total (27–29s per segment), vertical
+720x1280 H.264/AAC. The #5 birthday cutaway ends quickly after its gag; don't
+pad a full ten seconds with unrelated footage. The #1 hypnosis section joins
+the setup and later payoff, since these are far apart in the original episode.
+
+**Not yet built:** a generic style registry, dashboard/MCP style selector,
+football/streamer presets, or a user-facing transition-audio picker. Do not
+claim that every reference video was watched: four videos were analysed from
+the 446-item Shorts catalogue. The output is local and unpublished.
