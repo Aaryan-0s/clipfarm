@@ -19,6 +19,9 @@ from clippyme.pipeline.external_highlights import (
 REPO = Path(__file__).resolve().parents[1]
 DATA_ROOT = Path(os.environ.get("CLIPFARM_DATA_DIR", str(REPO / "data" / "clipfarm"))).resolve()
 IMPORT_ROOT = Path(os.environ.get("CLIPFARM_IMPORT_ROOT", str(DATA_ROOT / "imports"))).resolve()
+# An optional, user-approved secondary library can live on another drive.
+# Read on each call so an already-running MCP server picks up path changes.
+LIBRARY_ROOT_FILE = "library-root.txt"
 ALLOWED_SUFFIXES = {".mp4", ".mov", ".mkv", ".webm", ".m4v"}
 ALLOWED_HOSTS = {"youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be",
                  "www.twitch.tv", "twitch.tv", "kick.com", "www.kick.com"}
@@ -78,8 +81,16 @@ def _allowed_local(source_path: str) -> Path:
     source = Path(source_path).resolve(strict=True)
     if not source.is_file() or source.suffix.lower() not in ALLOWED_SUFFIXES:
         raise ValueError("source must be a supported video file")
-    if source != IMPORT_ROOT and IMPORT_ROOT not in source.parents:
-        raise ValueError(f"local source must be inside the approved import directory: {IMPORT_ROOT}")
+    approved_roots = [IMPORT_ROOT]
+    settings = DATA_ROOT / LIBRARY_ROOT_FILE
+    if settings.is_file():
+        user_root = Path(settings.read_text(encoding="utf-8").strip())
+        if not user_root.is_absolute() or not user_root.is_dir():
+            raise ValueError("configured library root is invalid")
+        approved_roots.append(user_root.resolve())
+    if not any(root == source or root in source.parents for root in approved_roots):
+        raise ValueError("local source must be inside an approved import directory: "
+                         + ", ".join(str(root) for root in approved_roots))
     if source.stat().st_size > MAX_SOURCE_BYTES:
         raise ValueError("source exceeds configured size limit")
     return source

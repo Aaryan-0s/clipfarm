@@ -32,6 +32,21 @@ def test_requires_permission_and_confines_files(isolated, tmp_path):
         core.prepare_video(url="http://127.0.0.1/secret", rights_confirmed=True)
 
 
+def test_user_approved_external_library(isolated, tmp_path):
+    root, _ = isolated
+    library = tmp_path / "external-familyguy"
+    library.mkdir()
+    (root / core.LIBRARY_ROOT_FILE).write_text(str(library), encoding="utf-8")
+    source = library / "Season 05" / "episode.mp4"
+    source.parent.mkdir()
+    source.write_bytes(b"test video placeholder")
+    assert core.prepare_video(source_path=str(source), rights_confirmed=True)["phase"] == "preparing"
+    outside = tmp_path / "outside.mp4"
+    outside.write_bytes(b"not approved")
+    with pytest.raises(ValueError, match="approved import"):
+        core.prepare_video(source_path=str(outside), rights_confirmed=True)
+
+
 def test_submission_render_and_human_approval(isolated):
     root, imports = isolated
     source = imports / "movie.mp4"

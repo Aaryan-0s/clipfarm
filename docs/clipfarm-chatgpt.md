@@ -166,3 +166,12 @@ lightweight unit tests but is the upstream's supported full-runtime path.
   publish content.
 - External CoS MCP plugins have OS-user privileges: keep this plugin local and
   grant it only the inputs you mean it to read.
+# Optional external video library
+
+To keep reusable source videos on a second drive, create
+`data/clipfarm/library-root.txt` with a single absolute folder path (for
+example `D:\familyguy`). The MCP service also accepts permitted local videos
+within that folder and its season subfolders, in addition to the normal
+`data/clipfarm/imports` directory. It resolves paths before checking their
+location, so a symlink cannot escape an approved root. Restart the ClipFarm
+custom server after upgrading its code to pick up this feature.
