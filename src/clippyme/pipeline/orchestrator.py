@@ -157,10 +157,18 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--aspect", choices=["9:16", "1:1", "16:9"], default="9:16")
     parser.add_argument("--monitor", action="store_true")
     parser.add_argument("--model", type=str, default=None)
+    parser.add_argument("--transcript-file", type=str, default=None,
+                        help="Existing word-timestamped JSON supplied by the ClipFarm MCP workflow")
+    parser.add_argument("--highlights-file", type=str, default=None,
+                        help="Validated, human-reviewed ChatGPT clip selection JSON (no Gemini API call)")
     return parser.parse_args(argv)
 
 
 def _configure_overrides(args: argparse.Namespace) -> None:
+    if bool(args.transcript_file) != bool(args.highlights_file):
+        raise ValueError("--transcript-file and --highlights-file must be supplied together")
+    if args.highlights_file and (args.skip_analysis or args.model or args.url or args.start_offset):
+        raise ValueError("external highlights require a local input, with no model override, start offset or skip-analysis")
     if args.model:
         if not re.match(r"^gemini-[A-Za-z0-9.\-]{1,64}$", args.model):
             raise ValueError(f"invalid --model: {args.model!r}")
@@ -297,7 +305,7 @@ def _run_preflight(args, input_video: str, output_dir: str, state: RuntimeState,
             aspect=args.aspect,
             has_gpu=bool(getattr(legacy, "CUDA_AVAILABLE", False)),
             max_clips=_max_clips_from_env(),
-            analysis_enabled=not args.skip_analysis,
+            analysis_enabled=not args.skip_analysis and not args.highlights_file,
         ),
         pricing=getattr(legacy, "MODEL_PRICING", {}),
         free_disk_bytes=free_disk,
@@ -311,6 +319,15 @@ def _run_preflight(args, input_video: str, output_dir: str, state: RuntimeState,
 
 def _load_or_transcribe(args, input_video: str, state: RuntimeState, legacy):
     transcript_path = os.path.join(state.checkpoint_dir, "transcript.json")
+    if args.transcript_file:
+        from clippyme.pipeline.external_highlights import load_transcript_file
+
+        state.start("transcribing", "validating ChatGPT handoff transcript")
+        transcript = load_transcript_file(args.transcript_file)
+        _atomic_json(transcript_path, transcript)
+        state.complete_stage("transcribing", artifacts={"transcript": transcript_path},
+                             detail="external timestamped transcript validated")
+        return transcript
     if args.skip_analysis:
         transcript = {"segments": [], "skipped": True}
         state.start("transcribing", "transcription skipped by request")
@@ -378,14 +395,19 @@ def _load_or_analyze(
     safe_title = sanitize_windows_basename(video_title, max_len=100) or "video"
     default_metadata = os.path.join(output_dir, f"{safe_title}_metadata.json")
     metadata_file = prior_metadata or default_metadata
-    if state.completed("analyzing"):
+    if state.completed("analyzing") and not args.highlights_file:
         saved = _load_json(metadata_file)
         if saved and isinstance(saved.get("shorts"), list):
             print("♻️ Resume: reusing analysis metadata checkpoint", flush=True)
             return saved, metadata_file
 
     state.start("analyzing", "selecting and validating clip candidates")
-    if args.skip_analysis:
+    if args.highlights_file:
+        from clippyme.pipeline.external_highlights import load_highlights_file
+
+        clips_data = load_highlights_file(args.highlights_file, transcript, duration)
+        print(f"🧠 ChatGPT handoff: {len(clips_data['shorts'])} validated clips; no Gemini request", flush=True)
+    elif args.skip_analysis:
         clips_data = _whole_video_fallback(video_title, duration)
     else:
         clips_data = legacy.get_viral_clips(

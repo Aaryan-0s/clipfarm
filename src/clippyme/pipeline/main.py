@@ -647,8 +647,16 @@ if __name__ == '__main__':
                         help="Override the Gemini model for viral detection on THIS job (e.g. "
                              "'gemini-2.5-pro', 'gemini-3.1-pro-preview'). When unset, the pipeline uses "
                              "GEMINI_MODEL from env / Settings (default gemini-3.5-flash).")
+    parser.add_argument('--transcript-file', type=str, default=None,
+                        help='Validated local JSON transcript from ClipFarm MCP')
+    parser.add_argument('--highlights-file', type=str, default=None,
+                        help='Validated ChatGPT-selected clips; bypasses Gemini')
 
     args = parser.parse_args()
+    if bool(args.transcript_file) != bool(args.highlights_file):
+        parser.error('--transcript-file and --highlights-file must be supplied together')
+    if args.highlights_file and (args.url or args.skip_analysis or args.model):
+        parser.error('external highlights require local --input without --model or --skip-analysis')
 
     # Output aspect ratio drives the crop dimensions + SmoothedCameraman crop
     # box. Passed explicitly to every process_video_to_vertical call below
@@ -774,7 +782,11 @@ if __name__ == '__main__':
                                   aspect_ratio=aspect_ratio, letterbox_zoom=letterbox_zoom)
     else:
         # 3. Transcribe (with cache for URL-based jobs)
-        cached = _load_cached_transcript(args.url) if args.url else None
+        if args.transcript_file:
+            from clippyme.pipeline.external_highlights import load_transcript_file
+            cached = load_transcript_file(args.transcript_file)
+        else:
+            cached = _load_cached_transcript(args.url) if args.url else None
         if cached:
             transcript = cached
         else:
@@ -798,8 +810,13 @@ if __name__ == '__main__':
             print(f"   ⚠️ Could not read duration (fps={fps}, frames={frame_count}); defaulting to 0.")
             duration = 0.0
 
-        # 4. Gemini Analysis
-        clips_data = get_viral_clips(transcript, duration, instructions=args.instructions)
+        # 4. Gemini or explicit ChatGPT/MCP handoff.  Never call Gemini when
+        # a validated external selection is supplied.
+        if args.highlights_file:
+            from clippyme.pipeline.external_highlights import load_highlights_file
+            clips_data = load_highlights_file(args.highlights_file, transcript, duration)
+        else:
+            clips_data = get_viral_clips(transcript, duration, instructions=args.instructions)
 
         # Smarter no-AI fallback: when Gemini is unavailable (no key) or its
         # output is unusable, segment the transcript into topic-coherent clips

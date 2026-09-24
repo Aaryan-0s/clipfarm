@@ -1,5 +1,13 @@
 <a id="readme-top"></a>
 
+> **ClipFarm fork:** Adds an optional, local **ChatGPT → Chat On Steroids MCP → ClippyMe**
+> highlight-selection workflow. Transcription runs in local Faster-Whisper;
+> ChatGPT reads timestamped transcript pages and submits reviewed selections;
+> ClippyMe renders the clips **without a Gemini/OpenAI model API key**. The
+> existing Gemini pipeline remains available separately. See
+> [ClipFarm setup and safety guide](docs/clipfarm-chatgpt.md). The MCP approval
+> tool records local approvals only; it does not publish automatically.
+
 <div align="center">
   <img src="dashboard/public/logo.svg" alt="ClippyMe logo" width="90" />
 
