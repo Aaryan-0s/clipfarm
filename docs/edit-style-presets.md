@@ -157,3 +157,22 @@ the setup and later payoff, since these are far apart in the original episode.
 football/streamer presets, or a user-facing transition-audio picker. Do not
 claim that every reference video was watched: four videos were analysed from
 the 446-item Shorts catalogue. The output is local and unpublished.
+
+## Joke-aware v2 (separate opt-in renderer)
+
+The user requested variable cut lengths and specifically reported that the
+previous ranking progress did not have an audible effect. The new opt-in module
+`clipfarm_mcp.styles.cartoon_ranked_joke_aware` uses a standalone preset JSON,
+not the default renderer or the prior v1 preset. Its per-scene start/end is
+chosen from the real setup, final reaction and next unrelated scene, rather
+than a forced duration. It uses two *separate* original generated effects:
+
+- Swish at the next scene's start (four changes #5→#4→#3→#2→#1).
+- Bright reveal tick at 0.52s on each of five ranks, exactly when the new
+  ranking row becomes visible. Previous list entries persist.
+
+The 2026-09-24 local review output is in
+`D:\fmailyguy\Compilations\Peter Top 5\Joke Aware v2`; the separate input
+cut plan and both sound WAVs are retained in that variant's assets. This
+version begins directly on #5, has dialogue captions, and is not published.
+Any future football/streamer presets remain independent.

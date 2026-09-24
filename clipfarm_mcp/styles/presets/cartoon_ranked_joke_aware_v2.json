@@ -1,0 +1,25 @@
+{
+  "style_id": "cartoon_ranked_joke_aware_v2",
+  "style_version": 2,
+  "display_name": "Cartoon Ranked — Joke-Aware Cuts + Audible Rank Reveal",
+  "width": 720,
+  "height": 1280,
+  "fps": 24,
+  "first_row_y": 161,
+  "row_spacing": 33,
+  "action_y": 322,
+  "action_height": 780,
+  "minimum_clip_seconds": 8,
+  "maximum_clip_seconds": 65,
+  "intro_seconds": 0,
+  "rank_reveal_seconds": 0.52,
+  "swish_gain": 0.65,
+  "rank_cue_gain": 0.55,
+  "labels": {
+    "1": "Hypnosis backfires",
+    "2": "Peter vs the bull",
+    "3": "The doctor checks Peter",
+    "4": "Angela's trap",
+    "5": "Birthday surprise"
+  }
+}
