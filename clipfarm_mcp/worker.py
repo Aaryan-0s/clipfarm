@@ -44,7 +44,9 @@ def _fetch_source(directory: Path, manifest: dict) -> tuple[Path, str]:
         raise ValueError("source URL is no longer permitted")
     from yt_dlp import YoutubeDL
 
-    opts = {"outtmpl": str(directory / "source.%(ext)s"), "format": "bv*+ba/b",
+    opts = {"outtmpl": str(directory / "source.%(ext)s"),
+            "format": "bv[height<=720][ext=mp4][vcodec^=avc1]+ba[ext=m4a]/bv[height<=720]+ba/b[height<=720]/b",
+            "js_runtimes": {"node": {}},
             "merge_output_format": "mp4", "noplaylist": True, "quiet": True,
             "max_filesize": core.MAX_SOURCE_BYTES, "ignoreerrors": False,
             "restrictfilenames": True}
@@ -80,7 +82,10 @@ def prepare(directory: Path) -> None:
     segments, info = model.transcribe(str(source), word_timestamps=True, vad_filter=True)
     parsed = []
     for segment in segments:
-        words = [{"word": w.word, "start": float(w.start), "end": float(w.end),
+        # Faster-Whisper occasionally emits zero-duration words at a pause;
+        # give those a minimal positive duration before strict validation.
+        words = [{"word": w.word, "start": float(w.start),
+                  "end": max(float(w.end), float(w.start) + 0.04),
                   "probability": float(w.probability or 0)} for w in (segment.words or [])]
         parsed.append({"text": segment.text, "start": float(segment.start),
                        "end": float(segment.end), "words": words})
