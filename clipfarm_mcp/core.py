@@ -105,7 +105,7 @@ def _spawn(job_id: str, operation: str) -> int:
 
 
 def prepare_video(*, source_path: str = "", url: str = "", rights_confirmed: bool = False,
-                  reframe_mode: str = "auto") -> dict:
+                  reframe_mode: str = "disabled") -> dict:
     if bool(source_path) == bool(url):
         raise ValueError("supply exactly one local source_path or URL")
     if not rights_confirmed:

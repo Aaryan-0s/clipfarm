@@ -67,10 +67,16 @@ def prepare(directory: Path) -> None:
     _status(directory, "transcribing", title=title, duration=duration)
     from faster_whisper import WhisperModel
 
-    model_name = os.environ.get("CLIPFARM_WHISPER_MODEL", "small")
+    model_name = os.environ.get("CLIPFARM_WHISPER_MODEL", "base")
     if model_name not in {"tiny", "base", "small", "medium", "large-v3", "distil-large-v3"}:
         raise ValueError("unsupported local Whisper model")
-    model = WhisperModel(model_name, device="auto", compute_type="int8")
+    # Auto probes the NVIDIA driver and may choose CUDA even on a machine
+    # without the required cuBLAS/cuDNN runtime DLLs. Prefer CPU for the
+    # laptop-friendly no-API workflow; GPU is an explicit opt-in.
+    device = os.environ.get("CLIPFARM_WHISPER_DEVICE", "cpu").strip().lower()
+    if device not in {"cpu", "cuda"}:
+        raise ValueError("CLIPFARM_WHISPER_DEVICE must be cpu or cuda")
+    model = WhisperModel(model_name, device=device, compute_type="int8")
     segments, info = model.transcribe(str(source), word_timestamps=True, vad_filter=True)
     parsed = []
     for segment in segments:
@@ -106,7 +112,7 @@ def render(directory: Path) -> None:
             "--input", str(source), "--output", str(out),
             "--transcript-file", str(directory / "transcript.json"),
             "--highlights-file", str(directory / "highlights.json"),
-            "--reframe-mode", manifest.get("reframe_mode", "auto")]
+            "--reframe-mode", manifest.get("reframe_mode", "disabled")]
     print("Executing local renderer with externally supplied highlights", flush=True)
     completed = subprocess.run(argv, cwd=str(core.REPO), env=env, check=False)
     if completed.returncode:

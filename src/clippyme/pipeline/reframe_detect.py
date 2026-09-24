@@ -21,8 +21,13 @@ def _get_yolo_model():
         _yolo_model.to(DEVICE)
     return _yolo_model
 
-mp_face_detection = mp.solutions.face_detection
-mp_face_mesh = mp.solutions.face_mesh
+# MediaPipe 0.10.30+ no longer exports the legacy `solutions` API.  Fixed
+# framing/letterbox does not use either detector, so defer the incompatibility
+# until a face-tracking mode actually requests one.  This keeps the low-spec
+# CPU/FFmpeg path usable on current Windows wheels.
+_legacy_solutions = getattr(mp, "solutions", None)
+mp_face_detection = getattr(_legacy_solutions, "face_detection", None)
+mp_face_mesh = getattr(_legacy_solutions, "face_mesh", None)
 
 _face_detection = None
 _face_mesh = None
@@ -32,6 +37,8 @@ def _get_face_detection():
     """Lazy-init MediaPipe FaceDetection on first use (avoids ~300ms TFLite
     load at import time on every subprocess, incl. --reframe-only switches)."""
     global _face_detection
+    if mp_face_detection is None:
+        raise RuntimeError("Face tracking needs MediaPipe with the legacy solutions API (tested: 0.10.14). Select fixed/disabled framing on this installation.")
     if _face_detection is None:
         _face_detection = mp_face_detection.FaceDetection(model_selection=1, min_detection_confidence=0.5)
     return _face_detection
@@ -40,6 +47,8 @@ def _get_face_detection():
 def _get_face_mesh():
     """Lazy-init MediaPipe FaceMesh on first use (see _get_face_detection)."""
     global _face_mesh
+    if mp_face_mesh is None:
+        raise RuntimeError("FaceMesh needs MediaPipe with the legacy solutions API (tested: 0.10.14). Select fixed/disabled framing on this installation.")
     if _face_mesh is None:
         _face_mesh = mp_face_mesh.FaceMesh(
             static_image_mode=False,

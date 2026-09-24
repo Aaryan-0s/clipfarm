@@ -33,11 +33,13 @@ mcp = FastMCP("ClipFarm", instructions=(
 
 @mcp.tool()
 def prepare_video(source_path: str = "", url: str = "", rights_confirmed: bool = False,
-                  reframe_mode: str = "auto") -> dict:
+                  reframe_mode: str = "disabled") -> dict:
     """Queue a local video or permitted YouTube/Twitch/Kick URL for offline Whisper transcription.
 
-    Local files must be under CLIPFARM_IMPORT_ROOT. Only call with rights_confirmed
-    when the user confirms ownership or permission to clip the source.
+    Local files must be under CLIPFARM_IMPORT_ROOT. Defaults to CPU-friendly
+    fixed framing; choose auto only with compatible face-tracking MediaPipe.
+    Only call with rights_confirmed when the user confirms ownership or
+    permission to clip the source.
     """
     return core.prepare_video(source_path=source_path, url=url,
                               rights_confirmed=rights_confirmed, reframe_mode=reframe_mode)

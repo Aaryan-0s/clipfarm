@@ -533,8 +533,15 @@ def select_cover_frame(video_path):
 
                 score = 0.0
 
-                # Face detection (reuse existing MediaPipe)
-                candidates = detect_face_candidates(frame)
+                # MediaPipe versions without the legacy solutions API cannot
+                # do face detection, but cover selection still works using
+                # sharpness and exposure. Tracking modes remain explicit.
+                try:
+                    candidates = detect_face_candidates(frame)
+                except RuntimeError as exc:
+                    if "legacy solutions API" not in str(exc):
+                        raise
+                    candidates = []
                 if candidates:
                     score += 50  # Face present = big bonus
 

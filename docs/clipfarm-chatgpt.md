@@ -52,7 +52,8 @@ this mode. Normal ClippyMe Gemini jobs remain available separately.
    New-Item -ItemType Directory -Force .\data\clipfarm\imports
    $env:CLIPFARM_IMPORT_ROOT = (Resolve-Path .\data\clipfarm\imports).Path
    $env:CLIPFARM_DATA_DIR = (Resolve-Path .\data\clipfarm).Path
-   $env:CLIPFARM_WHISPER_MODEL = 'small'
+   $env:CLIPFARM_WHISPER_MODEL = 'base'
+   $env:CLIPFARM_WHISPER_DEVICE = 'cpu'  # default; no CUDA libraries required
    $env:TRANSCRIPTION_PROVIDER = 'whisper'
    ```
 
