@@ -168,6 +168,25 @@ lightweight unit tests but is the upstream's supported full-runtime path.
   grant it only the inputs you mean it to read.
 # Optional external video library
 
+## Local multi-episode countdown editor
+
+The local `clipfarm_mcp.compile_countdown` module can assemble five reviewed
+15–20 second moments from separate episode files into one vertical video, plus
+five individual clips. Supply a JSON plan with five unique `rank` values,
+`source`, `season`, `episode`, `label`, `file_tag`, `start` and `end`. A clip may
+instead specify `ranges` for two short source moments, such as a setup and a
+later payoff, provided their combined duration stays within 15–20 seconds.
+The output includes rank/title graphics, an introduction, editable PNG art,
+and `render_manifest.json`. It uses FFmpeg and Pillow locally, with no AI API
+or automatic publishing. Example:
+
+```powershell
+python -m clipfarm_mcp.compile_countdown data/clipfarm/family_guy_top5.json --output "D:\fmailyguy\Compilations\Peter Top 5"
+```
+
+If a source is missing, `--allow-missing` creates a clearly labeled draft;
+it does not claim a complete five-item compilation.
+
 To keep reusable source videos on a second drive, create
 `data/clipfarm/library-root.txt` with a single absolute folder path (for
 example `D:\familyguy`). The MCP service also accepts permitted local videos
