@@ -176,3 +176,20 @@ The 2026-09-24 local review output is in
 cut plan and both sound WAVs are retained in that variant's assets. This
 version begins directly on #5, has dialogue captions, and is not published.
 Any future football/streamer presets remain independent.
+
+## Quagmire ranked sample (2026-09-25)
+
+`quagmire_ranked_v1.json` is an explicit alternative to the Peter preset;
+its title, ranking labels, output filename, and aspect-preserving action-stage
+layout are local to this preset. It reuses the two independently generated
+audio effects, and the original MKV season library is read-only. The renderer
+accepts `--preset clipfarm_mcp/styles/presets/quagmire_ranked_v1.json` while
+retaining its previous default when no preset is passed. No global default or
+legacy pipeline was changed.
+
+The five scenes were located in the user's episode files and confirmed against
+local subtitles and contact sheets: S05E02 airshow, S10E21 Giraffity,
+S08E02 Internet-arm setup/payoff, S15E03 German-things rescue, and S17E02
+Ring-girl chase. The video is saved under
+`D:\fmailyguy\Compilations\Quagmire Top 5\Cartoon Ranked v1` and has
+five variable-length, separately saved scenes; no intro or publishing.

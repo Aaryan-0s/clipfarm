@@ -59,9 +59,15 @@ def create_backplates(item: dict, preset: dict, art: Path) -> tuple[Path, Path]:
         d.rectangle((0, 0, w, 317), fill=(245, 249, 248, 67))
         d.rectangle((0, 315, w, 322), fill=(20, 23, 26, 165))
         d.rectangle((0, 1102, w, 1108), fill=(20, 23, 26, 155))
-        base.stylized_line(d, 24, 20, [("RANKING ", "#FFFFFF"), ("TOP 5 ", "#FF9839"),
-                                        ("TIMES ", "#FFFFFF"), ("PETER", "#FF9839")])
-        base.stylized_line(d, 24, 72, [("GOT ", "#FFFFFF"), ("HARASSED", "#5CE17C")])
+        first_line = preset.get("title_line_1_parts", [
+            ["RANKING ", "#FFFFFF"], ["TOP 5 ", "#FF9839"],
+            ["TIMES ", "#FFFFFF"], ["PETER", "#FF9839"],
+        ])
+        second_line = preset.get("title_line_2_parts", [
+            ["GOT ", "#FFFFFF"], ["HARASSED", "#5CE17C"],
+        ])
+        base.stylized_line(d, 24, 20, [(part, color) for part, color in first_line])
+        base.stylized_line(d, 24, 72, [(part, color) for part, color in second_line])
         for rank in range(1, 6):
             y = preset["first_row_y"] + (rank - 1) * preset["row_spacing"]
             active = rank == item["rank"] and is_revealed
@@ -101,9 +107,22 @@ def filter_graph(item: dict, preset: dict, ass_filename: str) -> str:
     """Each rank gets an audible reveal; all but the first get a separate swish."""
     swish_gain = float(preset["swish_gain"]) if item["rank"] < 5 else 0
     reveal_ms = int(round(preset["rank_reveal_seconds"]*1000))
+    if preset.get("preserve_source_aspect", False):
+        action = (
+            "[0:v]fps=24,split=2[soft_src][sharp_src];"
+            "[soft_src]scale=720:780:force_original_aspect_ratio=increase,"
+            "crop=720:780,boxblur=20:2[soft];"
+            "[sharp_src]scale=720:780:force_original_aspect_ratio=decrease,"
+            "setsar=1[sharp];"
+            "[soft][sharp]overlay=(W-w)/2:(H-h)/2:shortest=1,setsar=1[scene];"
+        )
+    else:
+        action = (
+            "[0:v]fps=24,scale=720:780:force_original_aspect_ratio=increase,"
+            "crop=720:780,setsar=1[scene];"
+        )
     visual = (
-        "[0:v]fps=24,scale=720:780:force_original_aspect_ratio=increase,"
-        "crop=720:780,setsar=1[scene];"
+        action +
         "[1:v]format=yuv420p[waiting];[2:v]format=yuv420p[shown];"
         f"[waiting][shown]overlay=0:0:enable='gte(t,{preset['rank_reveal_seconds']})':"
         "shortest=1[board];"
@@ -119,6 +138,34 @@ def filter_graph(item: dict, preset: dict, ass_filename: str) -> str:
         "alimiter=limit=0.92[a]"
     )
     return visual + audio
+
+
+def episode_clip(item: dict, art: Path, fps: int, preset: dict) -> Path:
+    """Keep the episode's real aspect ratio for this style, without altering v1/v2."""
+    if not preset.get("preserve_source_aspect", False):
+        return base.episode_clip(item, art, fps)
+    parts = []
+    for i, (start, end) in enumerate(item["ranges"]):
+        part = art / f"{item['rank']}_source_{i}.mp4"
+        base.call(["ffmpeg", "-nostdin", "-hide_banner", "-loglevel", "error", "-y",
+                   "-ss", str(start), "-i", item["source"], "-t", str(end-start),
+                   "-map", "0:v:0", "-map", "0:a:0", "-r", str(fps),
+                   "-vf", "scale=852:480:force_original_aspect_ratio=decrease:"
+                          "force_divisible_by=2,setsar=1",
+                   "-c:v", "libx264", "-crf", "22", "-preset", "veryfast",
+                   "-pix_fmt", "yuv420p", "-c:a", "aac", "-ar", "48000",
+                   "-ac", "2", "-b:a", "128k", str(part)])
+        parts.append(part)
+    if len(parts) == 1:
+        return parts[0]
+    list_file = art / f"{item['rank']}_join.txt"
+    list_file.write_text("".join(f"file '{p.resolve().as_posix()}'\n" for p in parts),
+                         encoding="utf-8")
+    output = art / f"{item['rank']}_source_joined.mp4"
+    base.call(["ffmpeg", "-nostdin", "-hide_banner", "-loglevel", "error", "-y",
+               "-f", "concat", "-safe", "0", "-i", str(list_file),
+               "-c", "copy", str(output)])
+    return output
 
 
 def render(item: dict, src: Path, waiting: Path, shown: Path, subtitles: Path,
@@ -149,9 +196,11 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("plan", type=Path)
     ap.add_argument("--output", type=Path, required=True)
+    ap.add_argument("--preset", type=Path, default=PRESET,
+                    help="Optional explicit style JSON; default stays the Peter v2 preset")
     ap.add_argument("--whisper-model", choices=["tiny", "base", "small"], default="base")
     args = ap.parse_args()
-    preset = json.loads(PRESET.read_text(encoding="utf-8"))
+    preset = json.loads(args.preset.read_text(encoding="utf-8"))
     plan = json.loads(args.plan.read_text(encoding="utf-8"))
     clips = validate_plan(plan, preset)
     args.output.mkdir(parents=True, exist_ok=True)
@@ -164,7 +213,7 @@ def main() -> None:
     model = WhisperModel(args.whisper_model, device="cpu", compute_type="int8")
     results = []
     for item in clips:
-        src = base.episode_clip(item, art, preset["fps"])
+        src = episode_clip(item, art, preset["fps"], preset)
         waiting, shown = create_backplates(item, preset, art)
         subtitles = art / f"rank_{item['rank']}.ass"
         base.ass_caption_file(src, subtitles, model=model)
@@ -174,7 +223,7 @@ def main() -> None:
         print(f"Rank #{item['rank']}: {metadata['seconds']:.2f}s, swish={metadata['swish_at_next_clip_start']}, rank cue=YES", flush=True)
     join = art / "concat.txt"
     join.write_text("".join(f"file '{Path(m['file']).resolve().as_posix()}'\n" for m in results), encoding="utf-8")
-    final = args.output / "Top_5_Peter_Joke_Aware_with_Rank_SFX.mp4"
+    final = args.output / preset.get("output_filename", "Top_5_Peter_Joke_Aware_with_Rank_SFX.mp4")
     base.call(["ffmpeg", "-nostdin", "-hide_banner", "-loglevel", "error", "-y",
                "-f", "concat", "-safe", "0", "-i", str(join), "-c", "copy",
                "-movflags", "+faststart", str(final)])
