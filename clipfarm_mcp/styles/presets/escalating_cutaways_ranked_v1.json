@@ -1,0 +1,12 @@
+{
+  "style_id":"escalating_cutaways_ranked_v1","style_version":1,
+  "display_name":"Family Guy Cutaways That Escalated Too Far",
+  "width":720,"height":1280,"fps":24,"first_row_y":161,"row_spacing":33,
+  "action_y":322,"action_height":780,"minimum_clip_seconds":8,
+  "maximum_clip_seconds":65,"intro_seconds":0,"rank_reveal_seconds":0.52,
+  "swish_gain":0.65,"rank_cue_gain":0.55,"preserve_source_aspect":true,
+  "output_filename":"Top_5_Family_Guy_Cutaways_Escalated.mp4",
+  "title_line_1_parts":[["RANKING ","#FFFFFF"],["TOP 5 ","#FF9839"],["CUTAWAYS","#FFFFFF"]],
+  "title_line_2_parts":[["THAT WENT ","#FF9839"],["TOO FAR","#5CE17C"]],
+  "labels":{"1":"Kool-Aid in court","2":"The firetruck hunts","3":"Bed Bath & Beyond","4":"Do not push!","5":"Deer road rage"}
+}

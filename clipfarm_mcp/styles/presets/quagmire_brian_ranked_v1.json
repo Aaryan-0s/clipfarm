@@ -1,0 +1,10 @@
+{
+  "style_id":"quagmire_brian_ranked_v1","style_version":1,"display_name":"Quagmire vs Brian — Ranked",
+  "width":720,"height":1280,"fps":24,"first_row_y":161,"row_spacing":33,"action_y":322,"action_height":780,
+  "minimum_clip_seconds":8,"maximum_clip_seconds":65,"intro_seconds":0,"rank_reveal_seconds":0.52,
+  "swish_gain":0.65,"rank_cue_gain":0.55,"preserve_source_aspect":true,
+  "output_filename":"Top_5_Quagmire_vs_Brian_Moments.mp4",
+  "title_line_1_parts":[["RANKING ","#FFFFFF"],["TOP 5 ","#FF9839"],["QUAGMIRE","#FFFFFF"]],
+  "title_line_2_parts":[["VS. ","#FF9839"],["BRIAN MOMENTS","#5CE17C"]],
+  "labels":{"1":"The legendary roast","2":"Quagmire catches Brian","3":"Jillian revenge date","4":"Why he hates Brian","5":"Brian the cat"}
+}

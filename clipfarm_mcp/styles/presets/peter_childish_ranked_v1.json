@@ -1,0 +1,12 @@
+{
+  "style_id":"peter_childish_ranked_v1","style_version":1,
+  "display_name":"Peter Griffin Acts Like a Child",
+  "width":720,"height":1280,"fps":24,"first_row_y":161,"row_spacing":33,
+  "action_y":322,"action_height":780,"minimum_clip_seconds":8,
+  "maximum_clip_seconds":65,"intro_seconds":0,"rank_reveal_seconds":0.52,
+  "swish_gain":0.65,"rank_cue_gain":0.55,"preserve_source_aspect":true,
+  "output_filename":"Top_5_Times_Peter_Acted_Like_a_Child.mp4",
+  "title_line_1_parts":[["RANKING ","#FFFFFF"],["TOP 5 ","#FF9839"],["PETER","#FFFFFF"]],
+  "title_line_2_parts":[["CHILDISH ","#FF9839"],["MOMENTS","#5CE17C"]],
+  "labels":{"1":"Yay Lois!","2":"Peter hides in a tree","3":"LEGOs, not Mega Bloks","4":"He buys a horse","5":"Preschool trivia"}
+}

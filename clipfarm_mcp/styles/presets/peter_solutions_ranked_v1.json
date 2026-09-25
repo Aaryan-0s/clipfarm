@@ -1,0 +1,10 @@
+{
+  "style_id":"peter_solutions_ranked_v1","style_version":1,"display_name":"Peter's Worst Solutions — Ranked",
+  "width":720,"height":1280,"fps":24,"first_row_y":161,"row_spacing":33,"action_y":322,"action_height":780,
+  "minimum_clip_seconds":8,"maximum_clip_seconds":65,"intro_seconds":0,"rank_reveal_seconds":0.52,
+  "swish_gain":0.65,"rank_cue_gain":0.55,"preserve_source_aspect":true,
+  "output_filename":"Top_5_Peters_Worst_Solutions.mp4",
+  "title_line_1_parts":[["RANKING ","#FFFFFF"],["TOP 5 ","#FF9839"],["PETER'S","#FFFFFF"]],
+  "title_line_2_parts":[["WORST ","#FF9839"],["SOLUTIONS","#5CE17C"]],
+  "labels":{"1":"Invades Joe's pool","2":"Creates Petoria","3":"Takes the wrong baby","4":"$150,000 welfare","5":"Starts his own TV"}
+}
