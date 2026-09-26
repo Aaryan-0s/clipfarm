@@ -193,3 +193,28 @@ S08E02 Internet-arm setup/payoff, S15E03 German-things rescue, and S17E02
 Ring-girl chase. The video is saved under
 `D:\fmailyguy\Compilations\Quagmire Top 5\Cartoon Ranked v1` and has
 five variable-length, separately saved scenes; no intro or publishing.
+
+## Family Guy ranking v2 — opt-in (2026-09-26)
+
+Read `docs/family_guy_ranking_template_rules.md` for the complete required
+layout, audio, sequence, watermark, captions and thumbnail contract. The
+standalone `family_guy_ranked_v2.py` renderer explicitly uses playback order
+`[2, 3, 4, 5, 1]` rather than the previous numeric countdown. The visible
+board keeps numeric rows fixed, types each newly active label with independent
+key-click audio, and only reveals #1 during the final scene.
+
+This style hash-verifies the user's MP3 at
+`D:\fmailyguy\ClipFarm Templates\Audio\transition_swish_approved.mp3`,
+decodes and trims leading silence, and plays it exactly at each new scene's
+start. It does **not** generate or use the old synthesized swish. The finished
+Stewie example uses `@clipshanger70`, authored episode subtitles, and an
+actual-frame thumbnail. The project source plan is
+`data/clipfarm/stewie_top_moments_v2.json` (ignored user-media working file);
+the complete plan is copied into the output directory.
+
+```powershell
+python -m clipfarm_mcp.styles.family_guy_ranked_v2 data/clipfarm/stewie_top_moments_v2.json --output "D:\fmailyguy\Compilations\Stewie Top 5\Ranking v2"
+```
+
+The export and its evidence are in `D:\fmailyguy\Compilations\Stewie Top 5\Ranking v2`.
+Original source files and older compilation styles were not changed.

@@ -1,0 +1,40 @@
+{
+  "style_id": "family_guy_ranked_v2",
+  "style_version": 2,
+  "display_name": "Family Guy Ranked - typing + approved cut-aligned swish + watermark",
+  "playback_order": [2, 3, 4, 5, 1],
+  "width": 720,
+  "height": 1280,
+  "fps": 24,
+  "first_row_y": 161,
+  "row_spacing": 33,
+  "action_y": 322,
+  "action_height": 780,
+  "minimum_clip_seconds": 7,
+  "maximum_clip_seconds": 65,
+  "preserve_source_aspect": true,
+  "typing_delay": 0.16,
+  "typing_duration": 1.24,
+  "swish_gain": 0.45,
+  "watermark": "@clipshanger70",
+  "approved_swish_path": "D:/fmailyguy/ClipFarm Templates/Audio/transition_swish_approved.mp3",
+  "approved_swish_sha256": "D2A6E6EB3191C0498637B24897B420717BCAE71C4B73F1AB5237DB9C47A802F6",
+  "output_filename": "Top_5_Stewie_Moments_New_Ranking_Template.mp4",
+  "thumbnail_source_second": 296.6,
+  "title_line_1_parts": [
+    ["RANKING ", "#FFFFFF"],
+    ["TOP 5 ", "#FF9839"],
+    ["STEWIE", "#FFFFFF"]
+  ],
+  "title_line_2_parts": [
+    ["FUNNIEST ", "#5CE17C"],
+    ["MOMENTS", "#FFFFFF"]
+  ],
+  "labels": {
+    "1": "Where's my money?",
+    "2": "Stewie avenges Rupert",
+    "3": "Cool Hwhip",
+    "4": "Brian's big novel",
+    "5": "Mom! Mom! Mommy!"
+  }
+}

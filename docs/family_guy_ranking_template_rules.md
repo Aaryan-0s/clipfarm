@@ -124,4 +124,6 @@ The manifest must record `playback_order: [2, 3, 4, 5, 1]`, actual durations and
 
 ## 10. Implementation status
 
-This Markdown document records **requirements**. Its presence does **not** mean existing videos have been re-rendered or that the current renderer already implements playback reordering, typewriter audio/visuals, the supplied sound, watermark or automatic thumbnails. Build and verify this as a new **opt-in Family Guy template**, preserving the old renders and all unrelated ClipFarm formats.
+The new **opt-in** implementation is `clipfarm_mcp/styles/family_guy_ranked_v2.py`, configured by `clipfarm_mcp/styles/presets/family_guy_ranked_v2.json`. It enforces `[2,3,4,5,1]`, typed labels with separate synthesized key clicks, the hash-checked approved user MP3 aligned to the four actual cut boundaries, the exact watermark, a per-topic thumbnail, and authored episode subtitles (with Whisper fallback).
+
+The first full v2 review export is `D:\fmailyguy\Compilations\Stewie Top 5\Ranking v2`; it contains the MP4, 1280×720 thumbnail, source plan, manifest and QA report. It is **not uploaded**. Older Peter, Quagmire and twelve batch-topic renders still use their original style and have **not** been re-rendered. This style does not alter ClipFarm's global default, football or streamer workflows.
