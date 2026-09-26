@@ -38,6 +38,14 @@
 
 **Use the new swish SFX supplied by the user. Never use or silently fall back to the old generated `original_swisshhh.wav` or `original_whoosh.wav`.**
 
+**Approved asset location:** `D:\fmailyguy\ClipFarm Templates\Audio\transition_swish_approved.mp3`
+
+**Original supplied filename:** `dheerajakam4jor-swoosh-sound-effect-for-fight-scenes-or-transitions-2-149890.mp3`
+
+**SHA-256:** `D2A6E6EB3191C0498637B24897B420717BCAE71C4B73F1AB5237DB9C47A802F6`
+
+**Asset properties:** MP3, 48 kHz, mono, about 0.36 seconds. The original was moved into the template's Audio folder without changing its bytes.
+
 - There are exactly **four** transition swishes: `#2→#3`, `#3→#4`, `#4→#5`, and `#5→#1`. No swish before #2 and no automatic swish after #1.
 - Align the **audible onset / perceptual attack** of the supplied swish to the **exact visual cut frame where the incoming ranked scene begins**. The scene change controls the swish timing—not when the label starts typing or finishes.
 - Derive every scene-change timestamp from the actual cumulative duration of the preceding rendered clips; do not use fixed absolute times or an estimated clip length.
