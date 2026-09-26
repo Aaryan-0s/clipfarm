@@ -106,7 +106,22 @@ status inside CoS alone does not prove ChatGPT has refreshed its tool list.
    Inspect `list_clips` and optional `get_video_frame(..., clip_index=...)`.
 6. Review actual MP4s in the local `data/clipfarm/jobs/<id>/render/` folder.
    Call `approve_clips(job_id, clip_indices)` to record local approval only.
-   Posting/scheduling requires separate explicit action in ClippyMe.
+   Posting/scheduling requires separate explicit approval in ClipFarm's opt-in
+   YouTube scheduler; ordinary clip approval never uploads anything.
+
+### YouTube scheduling after video review
+
+Read `docs/youtube-scheduler.md` for Google OAuth setup, private credential
+storage, the local queue, and the separate approval/upload steps. Once the
+user has connected the appropriate channel via the OAuth browser flow, the
+MCP plugin exposes `youtube_schedule_prepare`, `youtube_schedule_queue`,
+`youtube_connected_channels`, `youtube_schedule_approve`, and
+`youtube_schedule_submit` (restart the plugin after installing code changes).
+Preparing a draft and approving metadata are strictly local. The final submit
+call **uploads the video and requests future public release on YouTube** and
+must only be called when the user separately confirms `SCHEDULE <draft_id>`.
+An unverified Google API project may be restricted to private uploads, so
+always verify scheduling/visibility in YouTube Studio before reporting success.
 
 ### Example clip-selection input
 

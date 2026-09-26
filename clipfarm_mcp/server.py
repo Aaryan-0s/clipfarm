@@ -20,9 +20,9 @@ try:
     from mcp.server.fastmcp import FastMCP  # MCP Python SDK v1
 except ModuleNotFoundError:
     from mcp.server.mcpserver import MCPServer as FastMCP  # MCP Python SDK v2
-from mcp.types import ImageContent
+from mcp.types import ImageContent  # noqa: E402 — executable-plugin sys.path bootstrap above
 
-from clipfarm_mcp import core
+from clipfarm_mcp import core, youtube_scheduler  # noqa: E402 — same bootstrap
 
 mcp = FastMCP("ClipFarm", instructions=(
     "ClipFarm is a local, human-reviewed video clipping pipeline. "
@@ -96,6 +96,56 @@ def list_clips(job_id: str) -> list[dict]:
 def approve_clips(job_id: str, clip_indices: list[int]) -> dict:
     """Record local human approval. This tool NEVER uploads, schedules, or publishes clips."""
     return core.approve_clips(job_id, clip_indices)
+
+
+@mcp.tool()
+def youtube_schedule_prepare(render_folder: str, title: str = "",
+                             description: str = "") -> dict:
+    """Create an offline YouTube review draft for an MP4 + matching thumbnail.
+
+    NO upload or account action; requires render_manifest.json in folder.
+    User must separately approve exact file, metadata, channel, and date.
+    """
+    return youtube_scheduler.prepare(render_folder, title=title, description=description)
+
+
+@mcp.tool()
+def youtube_schedule_queue() -> list[dict]:
+    """Read local scheduling drafts and YouTube IDs; never changes an account."""
+    return youtube_scheduler.list_queue()
+
+
+@mcp.tool()
+def youtube_connected_channels() -> list[dict]:
+    """Read which YouTube channels this Windows machine has authorized via OAuth."""
+    return youtube_scheduler.owned_channels(youtube_scheduler.authenticated_service())
+
+
+@mcp.tool()
+def youtube_schedule_approve(draft_id: str, channel_id: str,
+                             publish_at: str, made_for_kids: bool) -> dict:
+    """ONLY record explicit user approval of video+thumbnail+metadata+channel+time.
+
+    Requires user to give the publishing date with timezone. Does NOT upload.
+    Final explicit schedule authorization is still required.
+    """
+    return youtube_scheduler.approve(draft_id, channel_id=channel_id,
+                                     publish_at=publish_at,
+                                     made_for_kids=made_for_kids)
+
+
+@mcp.tool()
+def youtube_schedule_submit(draft_id: str, confirmation: str) -> dict:
+    """UPLOAD and schedule a previously approved draft on the user's channel.
+
+    Consequential action: only call after the user specifically asks to
+    schedule THIS draft. They must explicitly confirm the exact phrase
+    'SCHEDULE <draft_id>'. This calls the YouTube API and requests public
+    release at the approved future time. A new API project may remain private
+    pending a Google compliance audit. Never invoke automatically on rendering
+    or on the ordinary approve_clips call.
+    """
+    return youtube_scheduler.upload_approved(draft_id, confirmation=confirmation)
 
 
 if __name__ == "__main__":
